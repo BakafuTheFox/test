@@ -1,0 +1,1 @@
+java -jar F:\java\util\out\artifacts\util_jar\util.jar -o F:\Java\util\output -s -a -p sample- F:\Java\util\in1.txt F:\Java\util\in2.txt
