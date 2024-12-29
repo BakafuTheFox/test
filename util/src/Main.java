@@ -19,7 +19,7 @@ public class Main {
                     if (i + 1 < args.length) {
                         outputPath = args[++i];
                     } else {
-                        System.err.println("Error: Missing output path after -o");
+                        System.err.println("Ошибка: отсутствует путь для файлов вывода после -o");
                         return;
                     }
                     break;
@@ -27,7 +27,7 @@ public class Main {
                     if (i + 1 < args.length) {
                         prefix = args[++i];
                     } else {
-                        System.err.println("Error: Missing prefix after -p");
+                        System.err.println("Ошибка: отсутствует префикс после -p");
                         return;
                     }
                     break;
@@ -50,7 +50,7 @@ public class Main {
         appendModes.put("float", appendMode);
         appendModes.put("string", appendMode);
         if (filePaths.isEmpty()) {
-            System.err.println("Error: No input files provided");
+            System.err.println("Ошибка: файл ввода не обнаружен");
             return;
         }
         //сбор статистики
@@ -71,14 +71,14 @@ public class Main {
                         Object obj = parseLine(line);
                         try {
                             if (obj instanceof Long) {
-                                Long value = (long)obj;
+                                long value = (Long)obj;
                                 writeToFile(outputPath, prefix, "integers.txt", String.valueOf(value), appendModes.get("integer"));
                                 typeCounts.put("integers", typeCounts.get("integers") + 1);
                                 intSum += value;
                                 intMin = Math.min(intMin, value);
                                 intMax = Math.max(intMax, value);
                                 appendModes.put("integer", true);
-                            } else if (obj instanceof Float) {
+                            } else if (obj instanceof Double) {
                                 double value = (double)obj;
                                 writeToFile(outputPath, prefix, "floats.txt", String.valueOf(value), appendModes.get("float"));
                                 typeCounts.put("floats", typeCounts.get("floats") + 1);
@@ -94,19 +94,19 @@ public class Main {
                                 appendModes.put("string", true);
                             }
                         } catch (Exception e) {
-                            System.err.println("Problem in writing/statistics switch: " + e);
-                            System.err.println("Because of the line: " + line);
+                            System.err.println("Ошибка записи статистики: " + e);
+                            System.err.println("Ошибка из-за строки: " + line);
                         }
                     }
                 } catch (IOException e) {
-                    System.err.println("Error reading file " + filePath + ": " + e.getMessage());
+                    System.err.println("Ошибка чтения файла " + filePath + ": " + e.getMessage());
                 }
             }
 
             printStatistics(typeCounts, intSum, intMin, intMax, floatSum, floatMin, floatMax, stringMinLen, stringMaxLen, shortStats, fullStats);
 
         } catch (Exception e) {
-            System.err.println("An unexpected error occurred: " + e.getMessage());
+            System.err.println("Неизвестная ошибка: " + e.getMessage());
         }
     }
 
@@ -122,15 +122,19 @@ public class Main {
             }
         }
     }
+
     //запись в файл
     private static void writeToFile(String outputPath, String prefix, String fileName, String content, boolean appendMode) throws IOException {
         String fullPath = Paths.get(outputPath, prefix + fileName).toString();
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fullPath, appendMode))) {
             writer.write(content);
             writer.newLine();
+        } catch (IOException e) {
+            System.err.println("Ошибка записи" + e);
         }
-        catch (IOException e) {System.err.println("Error writing" + e);};
+        ;
     }
+
     //вывод статистики в консоль
     private static void printStatistics(Map<String, Integer> typeCounts, long intSum, long intMin, long intMax, double floatSum, double floatMin, double floatMax, int stringMinLen, int stringMaxLen, boolean shortStats, boolean fullStats) {
         System.out.println("Statistics:");
